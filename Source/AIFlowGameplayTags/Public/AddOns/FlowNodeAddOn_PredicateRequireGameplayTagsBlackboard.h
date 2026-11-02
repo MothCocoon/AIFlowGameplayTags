@@ -39,10 +39,12 @@ public:
 	// --
 #endif
 
+protected:
 	// UFlowNodeBase
 	virtual void UpdateNodeConfigText_Implementation() override;
 	// --
 
+public:
 	bool TryGetTagsToCheckFromBlackboard(FGameplayTagContainer& TagsToCheckValue) const;
 
 public:

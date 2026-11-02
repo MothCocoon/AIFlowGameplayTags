@@ -32,6 +32,7 @@ public:
 	// --
 #endif
 
+protected:
 	// UFlowNodeBase
 	virtual void UpdateNodeConfigText_Implementation() override;
 	// --
