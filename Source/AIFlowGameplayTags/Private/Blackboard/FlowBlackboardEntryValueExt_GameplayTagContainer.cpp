@@ -12,58 +12,6 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(FlowBlackboardEntryValueExt_GameplayTagContainer)
 
-#if WITH_EDITOR
-void UFlowBlackboardEntryValueExt_GameplayTagContainer::PostInitProperties()
-{
-	Super::PostInitProperties();
-
-	if (!HasAnyFlags(RF_ArchetypeObject | RF_ClassDefaultObject))
-	{
-		if (Key.AllowedTypes.IsEmpty())
-		{
-			Key.AllowedTypes.Add(NewObject<UBlackboardKeyTypeExt_GameplayTagContainer>(this));
-		}
-	}
-}
-
-FString UFlowBlackboardEntryValueExt_GameplayTagContainer::GetEditorValueString() const
-{
-	return TagContainerValue.ToStringSimple();
-}
-
-FText UFlowBlackboardEntryValueExt_GameplayTagContainer::BuildNodeConfigText() const
-{
-	return FText::FromString(FString::Printf(TEXT("Set %s to %s"), *Key.GetKeyName().ToString(), *GetEditorValueString()));
-}
-#endif // WITH_EDITOR
-
-bool UFlowBlackboardEntryValueExt_GameplayTagContainer::TryProvideFlowDataPinProperty(TInstancedStruct<FFlowDataPinValue>& OutFlowDataPinProperty) const
-{
-	OutFlowDataPinProperty.InitializeAs<FFlowDataPinValue_GameplayTagContainer>(TagContainerValue);
-
-	return true;
-}
-
-bool UFlowBlackboardEntryValueExt_GameplayTagContainer::TryProvideFlowDataPinPropertyFromBlackboardEntry(
-	const FName& BlackboardKeyName,
-	const UBlackboardKeyType& BlackboardKeyType,
-	UBlackboardComponent* OptionalBlackboardComponent,
-	TInstancedStruct<FFlowDataPinValue>& OutFlowDataPinProperty) const
-{
-	return
-		TryProvideFlowDataPinPropertyFromBlackboardEntryTemplate<UBlackboardKeyTypeExt_GameplayTagContainer, FFlowDataPinValue_GameplayTagContainer>(
-			BlackboardKeyName,
-			BlackboardKeyType,
-			OptionalBlackboardComponent,
-			OutFlowDataPinProperty);
-}
-
-bool UFlowBlackboardEntryValueExt_GameplayTagContainer::TrySetValueFromInputDataPin(const FName& PinName, UFlowNode& PinOwnerFlowNode)
-{
-	const EFlowDataPinResolveResult ResolveResult = PinOwnerFlowNode.TryResolveDataPinValue<FFlowPinType_GameplayTagContainer>(PinName, TagContainerValue);
-	return FlowPinType::IsSuccess(ResolveResult);
-}
-
 void UFlowBlackboardEntryValueExt_GameplayTagContainer::SetOnBlackboardComponent(UBlackboardComponent* BlackboardComponent) const
 {
 	if (IsValid(BlackboardComponent))
@@ -96,3 +44,57 @@ TSubclassOf<UBlackboardKeyType> UFlowBlackboardEntryValueExt_GameplayTagContaine
 {
 	return UBlackboardKeyTypeExt_GameplayTagContainer::StaticClass();
 }
+
+bool UFlowBlackboardEntryValueExt_GameplayTagContainer::TrySetValueFromInputDataPin(const FName& PinName, UFlowNode& PinOwnerFlowNode)
+{
+	const EFlowDataPinResolveResult ResolveResult = PinOwnerFlowNode.TryResolveDataPinValue<FFlowPinType_GameplayTagContainer>(PinName, TagContainerValue);
+	return FlowPinType::IsSuccess(ResolveResult);
+}
+
+#if WITH_EDITOR
+FString UFlowBlackboardEntryValueExt_GameplayTagContainer::GetEditorValueString() const
+{
+	return TagContainerValue.ToStringSimple();
+}
+#endif // WITH_EDITOR
+
+bool UFlowBlackboardEntryValueExt_GameplayTagContainer::TryProvideFlowDataPinProperty(TInstancedStruct<FFlowDataPinValue>& OutFlowDataPinProperty) const
+{
+	OutFlowDataPinProperty.InitializeAs<FFlowDataPinValue_GameplayTagContainer>(TagContainerValue);
+
+	return true;
+}
+
+bool UFlowBlackboardEntryValueExt_GameplayTagContainer::TryProvideFlowDataPinPropertyFromBlackboardEntry(
+	const FName& BlackboardKeyName,
+	const UBlackboardKeyType& BlackboardKeyType,
+	UBlackboardComponent* OptionalBlackboardComponent,
+	TInstancedStruct<FFlowDataPinValue>& OutFlowDataPinProperty) const
+{
+	return
+		TryProvideFlowDataPinPropertyFromBlackboardEntryTemplate<UBlackboardKeyTypeExt_GameplayTagContainer, FFlowDataPinValue_GameplayTagContainer>(
+			BlackboardKeyName,
+			BlackboardKeyType,
+			OptionalBlackboardComponent,
+			OutFlowDataPinProperty);
+}
+
+#if WITH_EDITOR
+FText UFlowBlackboardEntryValueExt_GameplayTagContainer::BuildNodeConfigText() const
+{
+	return FText::FromString(FString::Printf(TEXT("Set %s to %s"), *Key.GetKeyName().ToString(), *GetEditorValueString()));
+}
+
+void UFlowBlackboardEntryValueExt_GameplayTagContainer::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	if (!HasAnyFlags(RF_ArchetypeObject | RF_ClassDefaultObject))
+	{
+		if (Key.AllowedTypes.IsEmpty())
+		{
+			Key.AllowedTypes.Add(NewObject<UBlackboardKeyTypeExt_GameplayTagContainer>(this));
+		}
+	}
+}
+#endif // WITH_EDITOR

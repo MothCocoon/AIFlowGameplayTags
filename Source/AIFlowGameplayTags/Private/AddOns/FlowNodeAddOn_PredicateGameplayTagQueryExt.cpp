@@ -20,24 +20,6 @@ UFlowNodeAddOn_PredicateGameplayTagQueryExt::UFlowNodeAddOn_PredicateGameplayTag
 #endif
 }
 
-#if WITH_EDITOR
-void UFlowNodeAddOn_PredicateGameplayTagQueryExt::PostInitProperties()
-{
-	Super::PostInitProperties();
-
-	if (HasAnyFlags(RF_ArchetypeObject | RF_ClassDefaultObject))
-	{
-		return;
-	}
-
-	if (Key.AllowedTypes.IsEmpty())
-	{
-		Key.AllowedTypes.Add(NewObject<UBlackboardKeyTypeExt_GameplayTag>(this));
-		Key.AllowedTypes.Add(NewObject<UBlackboardKeyTypeExt_GameplayTagContainer>(this));
-	}
-}
-#endif // WITH_EDITOR
-
 bool UFlowNodeAddOn_PredicateGameplayTagQueryExt::EvaluatePredicate_Implementation() const
 {
 	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
@@ -86,6 +68,24 @@ bool UFlowNodeAddOn_PredicateGameplayTagQueryExt::EvaluatePredicate_Implementati
 
 	return bResult;
 }
+
+#if WITH_EDITOR
+void UFlowNodeAddOn_PredicateGameplayTagQueryExt::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	if (HasAnyFlags(RF_ArchetypeObject | RF_ClassDefaultObject))
+	{
+		return;
+	}
+
+	if (Key.AllowedTypes.IsEmpty())
+	{
+		Key.AllowedTypes.Add(NewObject<UBlackboardKeyTypeExt_GameplayTag>(this));
+		Key.AllowedTypes.Add(NewObject<UBlackboardKeyTypeExt_GameplayTagContainer>(this));
+	}
+}
+#endif // WITH_EDITOR
 
 void UFlowNodeAddOn_PredicateGameplayTagQueryExt::UpdateNodeConfigText_Implementation()
 {

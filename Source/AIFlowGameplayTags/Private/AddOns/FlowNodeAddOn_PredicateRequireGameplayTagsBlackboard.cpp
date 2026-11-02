@@ -19,6 +19,26 @@ UFlowNodeAddOn_PredicateRequireGameplayTagsBlackboard::UFlowNodeAddOn_PredicateR
 #endif
 }
 
+bool UFlowNodeAddOn_PredicateRequireGameplayTagsBlackboard::EvaluatePredicate_Implementation() const
+{
+	if (Requirements.IsEmpty())
+	{
+		// And Empty Requirements results in a "true" result
+		return true;
+	}
+
+	// Sourcing the tags from the blackboard
+	FGameplayTagContainer TagsToTestValue;
+	if (!TryGetTagsToCheckFromBlackboard(TagsToTestValue))
+	{
+		return false;
+	}
+
+	// Execute the Requirements vs. TagContainer
+	const bool bResult = Requirements.RequirementsMet(TagsToTestValue);
+	return bResult;
+}
+
 #if WITH_EDITOR
 void UFlowNodeAddOn_PredicateRequireGameplayTagsBlackboard::PostInitProperties()
 {
@@ -52,24 +72,27 @@ void UFlowNodeAddOn_PredicateRequireGameplayTagsBlackboard::OnEditorPinConnectio
 
 #endif
 
-bool UFlowNodeAddOn_PredicateRequireGameplayTagsBlackboard::EvaluatePredicate_Implementation() const
+void UFlowNodeAddOn_PredicateRequireGameplayTagsBlackboard::UpdateNodeConfigText_Implementation()
 {
+#if WITH_EDITOR
+	FTextBuilder TextBuilder;
 	if (Requirements.IsEmpty())
 	{
-		// And Empty Requirements results in a "true" result
-		return true;
+		const FName RequirementsName = GET_MEMBER_NAME_CHECKED(ThisClass, Requirements);
+		TextBuilder.AppendLine(FString::Printf(TEXT("<not configured - Must have configured %s>"), *RequirementsName.ToString()));
 	}
-
-	// Sourcing the tags from the blackboard
-	FGameplayTagContainer TagsToTestValue;
-	if (!TryGetTagsToCheckFromBlackboard(TagsToTestValue))
+	else if (!Key.GetKeyName().IsNone())
 	{
-		return false;
+		TextBuilder.AppendLine(FString::Printf(TEXT("<not configured - must have a blackboard key>")));
+	}
+	else
+	{
+		TextBuilder.AppendLine(FString::Printf(TEXT("Does %s match:"), *Key.GetKeyName().ToString()));
+		TextBuilder.AppendLine(Requirements.ToString());
 	}
 
-	// Execute the Requirements vs. TagContainer
-	const bool bResult = Requirements.RequirementsMet(TagsToTestValue);
-	return bResult;
+	SetNodeConfigText(TextBuilder.ToText());
+#endif // WITH_EDITOR
 }
 
 bool UFlowNodeAddOn_PredicateRequireGameplayTagsBlackboard::TryGetTagsToCheckFromBlackboard(FGameplayTagContainer& TagsToCheckValue) const
@@ -114,29 +137,6 @@ bool UFlowNodeAddOn_PredicateRequireGameplayTagsBlackboard::TryGetTagsToCheckFro
 	}
 
 	return true;
-}
-
-void UFlowNodeAddOn_PredicateRequireGameplayTagsBlackboard::UpdateNodeConfigText_Implementation()
-{
-#if WITH_EDITOR
-	FTextBuilder TextBuilder;
-	if (Requirements.IsEmpty())
-	{
-		const FName RequirementsName = GET_MEMBER_NAME_CHECKED(ThisClass, Requirements);
-		TextBuilder.AppendLine(FString::Printf(TEXT("<not configured - Must have configured %s>"), *RequirementsName.ToString()));
-	}
-	else if (!Key.GetKeyName().IsNone())
-	{
-		TextBuilder.AppendLine(FString::Printf(TEXT("<not configured - must have a blackboard key>")));
-	}
-	else
-	{
-		TextBuilder.AppendLine(FString::Printf(TEXT("Does %s match:"), *Key.GetKeyName().ToString()));
-		TextBuilder.AppendLine(Requirements.ToString());
-	}
-
-	SetNodeConfigText(TextBuilder.ToText());
-#endif // WITH_EDITOR
 }
 
 #if WITH_EDITOR
