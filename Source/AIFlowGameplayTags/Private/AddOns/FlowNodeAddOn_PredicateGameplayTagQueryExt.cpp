@@ -1,6 +1,6 @@
 // Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
-
 #include "AddOns/FlowNodeAddOn_PredicateGameplayTagQueryExt.h"
+
 #include "BlackboardKeyTypeExt_GameplayTag.h"
 #include "BlackboardKeyTypeExt_GameplayTagContainer.h"
 #include "BlackboardGameplayTagFunctionLibrary.h"
